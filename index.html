@@ -1,1264 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#243c2f">
-  <title>Church Community | Debt Accounts & Payments</title>
-
+  <meta name="theme-color" content="#203c30">
+  <meta name="description" content="A demonstration online donation page. No payments are processed.">
+  <title>Church Donations | Online Giving Demo</title>
   <style>
-    :root {
-      --green: #243c2f;
-      --green-light: #315743;
-      --gold: #d6b56d;
-      --cream: #f6f2e9;
-      --white: #ffffff;
-      --text: #26352c;
-      --muted: #72796f;
-      --border: #e5e0d5;
-      --success: #267348;
-      --danger: #a53d36;
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.5;
-    }
-
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-
-    button:focus-visible,
-    input:focus-visible,
-    a:focus-visible {
-      outline: 3px solid var(--gold);
-      outline-offset: 3px;
-    }
-
-    .site-header {
-      background: var(--green);
-      color: white;
-      border-bottom: 4px solid var(--gold);
-      padding: 25px 18px;
-    }
-
-    .header-inner {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .church-mark {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      border: 1px solid var(--gold);
-      border-radius: 50%;
-      color: var(--gold);
-      font-size: 27px;
-    }
-
-    .site-header h1 {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(22px, 5vw, 30px);
-      font-weight: normal;
-    }
-
-    .site-header p {
-      margin: 4px 0 0;
-      color: #e8dcc0;
-      font-size: 14px;
-    }
-
-    main {
-      width: min(100% - 32px, 760px);
-      margin: 30px auto;
-    }
-
-    .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(20px, 5vw, 30px);
-      margin-bottom: 20px;
-      box-shadow: 0 5px 18px rgba(36, 60, 47, 0.045);
-    }
-
-    h2, h3 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-weight: normal;
-      color: var(--green);
-    }
-
-    h2 { font-size: 27px; margin: 0 0 8px; }
-    h3 { font-size: 20px; margin: 0 0 10px; }
-
-    .muted { color: var(--muted); }
-    .small { font-size: 13px; }
-
-    .field-label {
-      display: block;
-      margin: 18px 0 7px;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    input {
-      display: block;
-      width: 100%;
-      min-height: 49px;
-      padding: 12px 14px;
-      border: 1px solid #cfcfc4;
-      border-radius: 10px;
-      background: white;
-      color: var(--text);
-    }
-
-    input::placeholder { color: #91968e; }
-
-    .button {
-      display: block;
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 14px 18px;
-      margin-top: 16px;
-      background: var(--green);
-      color: white;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .button:hover { background: var(--green-light); }
-    .button:disabled { opacity: .6; cursor: wait; }
-
-    .button-secondary {
-      color: var(--green);
-      background: #f0eee6;
-      border: 1px solid var(--border);
-    }
-
-    .button-secondary:hover { background: #e7e3d8; }
-
-    .status {
-      min-height: 22px;
-      margin: 14px 0 0;
-      font-size: 14px;
-      overflow-wrap: anywhere;
-    }
-
-    .status.error { color: var(--danger); }
-    .status.success { color: var(--success); }
-
-    .notice {
-      border-left: 4px solid var(--gold);
-      background: #fbf7ed;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 18px;
-    }
-
-    .notice strong { color: var(--green); }
-
-    .balance-card {
-      background: var(--green);
-      color: white;
-      border-radius: 14px;
-      padding: 23px;
-      margin: 20px 0;
-    }
-
-    .balance-card .label {
-      color: #e5dcc7;
-      font-size: 14px;
-    }
-
-    .balance {
-      color: var(--gold);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(36px, 9vw, 48px);
-      margin: 4px 0;
-      overflow-wrap: anywhere;
-    }
-
-    .history-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .history-item:last-child { border-bottom: 0; }
-
-    .history-amount {
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .hidden { display: none !important; }
-
-    .site-footer {
-      text-align: center;
-      padding: 24px 16px 35px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .staff-link {
-      display: inline-block;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      text-decoration: none;
-    }
-
-    .staff-link:hover { text-decoration: underline; }
-
-    .pill {
-      display: inline-block;
-      background: #e8f2e9;
-      color: #245b36;
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    @media (max-width: 480px) {
-      main {
-        width: calc(100% - 22px);
-        margin: 18px auto;
-      }
-
-      .site-header { padding: 20px 14px; }
-
-      .church-mark {
-        width: 45px;
-        height: 45px;
-      }
-    }
-    #logoutVerseSection {text-align:center;background:#fffdf5;border-color:#d6b56d;padding:clamp(25px,5vw,42px)}
-    .logout-verse-cross {color:#94742f;font-size:52px;line-height:1.15;margin-bottom:12px}
-    #logoutVerseSection blockquote {color:#243c2f;font:italic clamp(20px,4vw,29px)/1.5 Georgia,"Times New Roman",serif;margin:15px auto;max-width:580px}
-    #logoutVerseSection .button {margin:22px auto 0}
+    :root{--green:#203c30;--green2:#315943;--gold:#c9a85f;--cream:#f6f3ec;--ink:#26352d;--muted:#707970;--line:#e7e2d8;--white:#fff;--radius:18px}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 Arial,Helvetica,sans-serif}
+    button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .top{background:var(--green);color:white;border-bottom:4px solid var(--gold);padding:26px 18px}.head{max-width:1040px;margin:auto;display:flex;align-items:center;gap:15px}
+    .mark{width:54px;height:54px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:28px;flex:none}
+    h1,h2,h3{font-family:Georgia,'Times New Roman',serif;font-weight:400}h1{font-size:clamp(24px,5vw,34px);margin:0} .top p{margin:4px 0 0;color:#e9dfc9}
+    main{width:min(100% - 30px,760px);margin:30px auto 40px}.demo{background:#fff4d9;border:1px solid #ead7a7;color:#654f20;border-radius:12px;padding:12px 15px;margin-bottom:18px;font-size:14px}
+    .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(20px,5vw,32px);margin-bottom:18px;box-shadow:0 5px 20px #203c3009}
+    h2{font-size:28px;color:var(--green);margin:0 0 8px}h3{font-size:21px;color:var(--green);margin:0 0 10px}.muted{color:var(--muted)}.small{font-size:13px}
+    .amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.amount{border:1px solid #cfcfc4;background:#fff;border-radius:11px;padding:13px 8px;font-weight:700;color:var(--green)}
+    .amount[aria-pressed=true]{background:var(--green);color:#fff;border-color:var(--green)}label{display:block;font-weight:700;font-size:14px;margin:17px 0 7px}
+    input[type=text],input[type=email],input[type=number]{width:100%;min-height:48px;padding:11px 13px;border:1px solid #cfcfc4;border-radius:10px;background:#fff;color:var(--ink)}
+    .frequency{display:flex;gap:10px;flex-wrap:wrap}.choice{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:10px 13px;border-radius:10px;font-size:14px}
+    .choice input,.tick input{width:18px;height:18px;accent-color:var(--green)}
+    .tick{display:flex;align-items:flex-start;gap:10px;font-weight:400;line-height:1.45}.tick input{flex:none;margin-top:3px}
+    .gift{background:#fbf8f0;border:1px solid #e9dfc8;border-radius:13px;padding:17px;margin-top:18px}
+    .declaration{font-size:13px;color:#59635a;background:#fff;border-left:3px solid var(--gold);padding:12px;margin-top:12px}
+    .security{border:1px solid var(--line);border-radius:12px;padding:15px;margin-top:18px}.security .tick{font-size:14px}
+    .pay{width:100%;border:0;border-radius:11px;background:var(--green);color:#fff;padding:15px 18px;margin-top:20px;font-weight:700}.pay:hover{background:var(--green2)}
+    .pay:disabled{opacity:.55;cursor:not-allowed}.status{margin:14px 0 0;font-size:14px;min-height:22px}.success{color:#21663c}.error{color:#a33b35}
+    .methods{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.method{border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;color:#4d5b51;background:#fff}
+    .footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 32px}.footer a{color:var(--green)}
+    @media(max-width:520px){.amounts{grid-template-columns:repeat(2,1fr)}main{margin-top:18px}.top{padding:20px 14px}.mark{width:46px;height:46px}}
   </style>
-  <script src="languages.js" defer></script>
-  <script src="daily-verse.js" defer></script>
 </head>
-
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="church-mark" aria-hidden="true">✝</div>
-      <div>
-        <h1>Church Community</h1>
-        <p>Debt Accounts &amp; Payments</p>
-      </div>
-    </div>
-  </header>
-
+  <header class="top"><div class="head"><div class="mark" aria-hidden="true">✝</div><div><h1>Church Donations</h1><p>Online giving · Demonstration page</p></div></div></header>
   <main>
-    <section id="loginSection" class="card">
-      <h2>Welcome</h2>
-      <p class="muted">
-        Access your church account securely using a UK mobile number.
-      </p>
+    <div class="demo"><strong>DEMO ONLY — NO MONEY WILL BE TAKEN.</strong> This is a visual prototype. It does not connect to a payment provider, save your details, send messages or process donations. Please do not enter real payment or personal information.</div>
+    <section class="panel">
+      <h2>Support our church</h2>
+      <p class="muted">Thank you for considering a donation. Your generosity helps support the life and work of our church community.</p>
+      <form id="donationForm">
+        <h3 style="margin-top:24px">Choose your donation</h3>
+        <div class="amounts" role="group" aria-label="Suggested donation amounts">
+          <button class="amount" type="button" data-amount="10" aria-pressed="false">£10</button>
+          <button class="amount" type="button" data-amount="20" aria-pressed="true">£20</button>
+          <button class="amount" type="button" data-amount="50" aria-pressed="false">£50</button>
+          <button class="amount" type="button" data-amount="100" aria-pressed="false">£100</button>
+        </div>
+        <label for="customAmount">Or enter another amount (£)</label>
+        <input id="customAmount" type="number" min="1" max="5000" step="0.01" placeholder="e.g. 25.00">
+        <div class="muted small" id="amountSummary" aria-live="polite">Selected donation: £20.00</div>
 
-      <form id="phoneForm">
-        <label class="field-label" for="phone">UK mobile number</label>
-        <input
-          id="phone"
-          type="tel"
-          autocomplete="tel"
-          inputmode="tel"
-          placeholder="07123456789"
-          maxlength="16"
-          required
-        >
+        <label>How often would you like to give?</label>
+        <div class="frequency">
+          <label class="choice"><input type="radio" name="frequency" value="once" checked> One-off</label>
+          <label class="choice"><input type="radio" name="frequency" value="monthly"> Monthly</label>
+        </div>
 
-        <p class="small muted">
-          Enter your UK mobile number. We will use a one-time SMS verification code instead of a password.
-        </p>
+        <label for="donorName">Name (optional in this demo)</label>
+        <input id="donorName" type="text" maxlength="80" autocomplete="off" placeholder="Your name">
+        <label for="donorEmail">Email (optional in this demo)</label>
+        <input id="donorEmail" type="email" maxlength="120" autocomplete="off" placeholder="you@example.com">
 
-        <button class="button" id="sendCodeButton" type="submit">
-          Send verification code
-        </button>
+        <div class="gift">
+          <h3>Gift Aid</h3>
+          <p class="muted small">Gift Aid may allow an eligible UK charity to claim an extra 25p for every £1 donated by a qualifying UK taxpayer, at no extra cost to the donor.</p>
+          <label class="tick"><input id="giftAid" type="checkbox"><span><strong>I would like to make a Gift Aid declaration</strong> (demo selection only).</span></label>
+          <div class="declaration">Example wording only: “I am a UK taxpayer and understand that if I pay less Income Tax and/or Capital Gains Tax in the current tax year than the amount of Gift Aid claimed on all my donations, it is my responsibility to pay the difference.” A real Gift Aid declaration must name the eligible charity and include the donor's full name and home address. The charity's eligibility and approved wording must be confirmed before this feature is used for real donations.</div>
+        </div>
+
+        <div class="panel" style="padding:17px;margin-top:18px;margin-bottom:0;box-shadow:none">
+          <h3>Payment method</h3>
+          <p class="muted small">Card payment is shown here as a design preview only. A real checkout must be provided by a trusted, compliant payment processor.</p>
+          <div class="methods" aria-label="Example payment methods"><span class="method">VISA</span><span class="method">Mastercard</span><span class="method">Contactless</span><span class="method">Apple Pay*</span><span class="method">Google Pay*</span></div>
+          <p class="muted small">*Availability depends on the payment provider and device. No card number, expiry date or security code is requested on this demo page.</p>
+        </div>
+
+        <div class="security">
+          <h3>Security check</h3>
+          <p class="muted small">For security reasons, please verify that you are not a robot before continuing.</p>
+          <label class="tick"><input id="humanCheck" type="checkbox"><span>I'm not a robot <span class="muted small">(simulated demo check)</span></span></label>
+          <p class="muted small">This prototype does not send an SMS or email verification code. A real website should use a reputable anti-bot service; never ask donors to share one-time banking or login codes.</p>
+        </div>
+        <button class="pay" id="donateButton" type="submit">Continue to secure card payment (demo)</button>
+        <p id="formStatus" class="status" role="status" aria-live="polite"></p>
       </form>
-
-      <form id="otpForm" class="hidden">
-        <label class="field-label" for="otp">Six-digit verification code</label>
-        <input
-          id="otp"
-          type="text"
-          inputmode="numeric"
-          autocomplete="one-time-code"
-          pattern="[0-9]{6}"
-          maxlength="6"
-          placeholder="Enter your code"
-          required
-        >
-
-        <button class="button" id="verifyButton" type="submit">
-          Verify and sign in
-        </button>
-
-        <button
-          class="button button-secondary"
-          id="changeNumberButton"
-          type="button"
-        >
-          Change mobile number
-        </button>
-      </form>
-
-      <p id="loginStatus" class="status" role="status" aria-live="polite"></p>
     </section>
-
-
-    <section id="nameSection" class="card hidden">
-      <h2>What is your name?</h2>
-      <p class="muted">Please enter your name so the church can identify your account correctly. Your name will be linked to this verified mobile number.</p>
-      <form id="customerNameForm">
-        <label class="field-label" for="customerNameInput">Your full name</label>
-        <input id="customerNameInput" type="text" maxlength="100" autocomplete="name" required>
-        <button class="button" id="saveCustomerNameButton" type="submit">Save my name</button>
-      </form>
-      <p id="customerNameStatus" class="status" role="status" aria-live="polite"></p>
-    </section>
-
-    <section id="accountSection" class="hidden">
-      <div class="card">
-        <span class="pill">Customer account</span>
-
-        <h2 style="margin-top: 14px">Your Account — <span id="customerNameHeading"></span></h2>
-
-        <p class="muted">
-          Your current outstanding balance and payment history.
-        </p>
-
-        <div class="balance-card">
-          <div class="label">Outstanding balance</div>
-          <div class="balance" id="balance">£0.00</div>
-          <div class="label">Amount remaining to pay</div>
-        </div>
-
-        <h3>Payment options</h3>
-
-        <div class="notice">
-          <strong>Cash payments in person</strong>
-          <p class="muted" style="margin-bottom: 0">
-            You can pay cash in person. Please ask an authorised member of church staff to record the payment against your account and provide confirmation.
-          </p>
-        </div>
-
-        <div class="notice">
-          <strong>Online payments</strong>
-          <p class="muted" style="margin-bottom: 0">
-            Online payments are not enabled yet. Please use the cash-payment arrangement above until an approved payment service is connected.
-          </p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Payment history</h3>
-        <div id="history">
-          <p class="muted">No payment history available.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Account security</h3>
-        <p class="muted small">
-          Keep your verification codes private. Contact church staff if your mobile number changes.
-        </p>
-        <button class="button button-secondary" id="logoutButton">
-          Sign out
-        </button>
-      </div>
-    </section>
-
-    <section id="staffSection" class="hidden">
-      <div class="card">
-        <h2>Staff access</h2>
-        <p class="muted">Authorised church staff only. Enter your four-digit staff PIN.</p>
-        <form id="staffLoginForm">
-          <label for="staffUsername">Staff username</label>
-          <input id="staffUsername" type="text" autocomplete="username" value="headadmin" maxlength="32" autocapitalize="none" spellcheck="false" required>
-          <label for="staffPin">Staff PIN</label>
-          <input id="staffPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required>
-          <button class="button" id="staffLoginButton" type="submit">Staff sign in</button>
-        </form>
-        <p id="staffStatus" class="status" role="status" aria-live="polite"></p>
-        <div id="staffWorkspace" class="hidden">
-          <p id="signedInStaffLabel" class="muted"></p>
-          <div id="staffAdminPanel" class="card hidden">
-            <h3>Head Admin — Manage staff</h3>
-            <p class="muted">Create staff accounts with their own usernames and four-digit PINs.</p>
-            <form id="staffCreateForm">
-              <label for="staffNewName">Staff name</label>
-              <input id="staffNewName" type="text" maxlength="80" required>
-              <label for="staffNewUsername">Username</label>
-              <input id="staffNewUsername" type="text" minlength="3" maxlength="32" pattern="[a-z][a-z0-9._-]{2,31}" autocapitalize="none" spellcheck="false" required>
-              <label for="staffNewPin">New staff PIN (four digits)</label>
-              <input id="staffNewPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password" required>
-              <button class="button" id="staffCreateButton" type="submit">Register staff member</button>
-            </form>
-            <h3>Registered staff</h3>
-            <div id="staffAccountList"><p class="muted">Loading staff…</p></div>
-          </div>
-          <h3>Find or register a customer</h3>
-          <form id="staffFindForm">
-            <label for="staffMobile">Customer UK mobile number</label>
-            <input id="staffMobile" type="tel" placeholder="07123456789" required>
-            <button class="button" type="submit">Find customer</button>
-          </form>
-          <div id="staffRegister" class="hidden">
-            <p class="muted">No customer found for that number.</p>
-            <label for="staffRegisterName">Account holder's full name</label>
-            <input id="staffRegisterName" type="text" maxlength="100" autocomplete="name" required>
-            <button class="button button-secondary" id="staffRegisterButton" type="button">Register this customer</button>
-          </div>
-          <div id="staffCustomer" class="hidden">
-            <h3>Customer account</h3>
-            <p id="staffCustomerLabel"></p>
-            <label for="staffCustomerName">Account holder's name</label>
-            <input id="staffCustomerName" type="text" maxlength="100" autocomplete="name" required>
-            <button class="button button-secondary" id="staffSaveCustomerNameButton" type="button">Save account name</button>
-            <p id="staffCustomerNameStatus" class="status" role="status" aria-live="polite"></p>
-            <p><strong>Outstanding balance: <span id="staffBalance">Loading…</span></strong></p>
-            <h3>Record an account transaction</h3>
-            <form id="staffTransactionForm">
-              <label for="staffTransactionType">Transaction</label>
-              <select id="staffTransactionType" required>
-                <option value="cash_payment">Cash payment received</option>
-                <option value="debt_added">Add debt</option>
-                <option value="debt_reduced">Reduce debt (adjustment)</option>
-              </select>
-              <label for="staffAmount">Amount in pounds (£), maximum £499</label>
-              <input id="staffAmount" type="number" min="0.01" max="499" step="0.01" required>
-              <label for="staffNote">Note (optional)</label>
-              <input id="staffNote" type="text" maxlength="500">
-              <button class="button" id="staffRecordButton" type="submit">Record transaction</button>
-            </form>
-            <h3>Recent transactions</h3>
-            <div id="staffHistory"><p class="muted">No records loaded.</p></div>
-          </div>
-          <button class="button button-secondary" type="button" id="staffLogoutButton">Staff sign out</button>
-        </div>
-        <button class="button button-secondary" id="staffBackButton" type="button">Back to customer login</button>
-      </div>
-    </section>
-    <section id="logoutVerseSection" class="card hidden" tabindex="-1" aria-live="polite">
-      <div class="logout-verse-cross" aria-hidden="true">☦</div>
-      <h2 id="logoutVerseTitle">Daily Bible verse</h2>
-      <blockquote id="logoutVerseText"></blockquote>
-      <p class="muted" id="logoutVerseRef"></p>
-      <p class="muted small" id="logoutVerseStatus">You are signed out</p>
-      <button class="button" type="button" id="logoutVerseReturn">Return to sign in</button>
+    <section class="panel">
+      <h3>Important information</h3>
+      <p class="muted small">This is a non-functional demonstration, not a live donation service. No payment is taken and no information is transmitted or stored. Before going live, the organisation must confirm its legal charity name and Gift Aid eligibility, privacy notice, payment provider and donation terms.</p>
     </section>
   </main>
-
-  <footer class="site-footer">
-    <div>Church Community</div>
-    <div>Debt Accounts &amp; Payments</div>
-    <a href="#staff" id="staffLink" class="staff-link">Staff access</a>
-  </footer>
-
+  <footer class="footer">Church Donations · Demonstration only</footer>
   <script>
     "use strict";
-    // Staff interface update pending server-side compatibility check.
-
-    // Public endpoint only. Never put Supabase service-role keys in this file.
-    const API_URL = "https://acyjdlrsvtgqqazzxzys.supabase.co/functions/v1/customer-auth";
-
-    const loginSection = document.getElementById("loginSection");
-    const accountSection = document.getElementById("accountSection");
-    const nameSection = document.getElementById("nameSection");
-    const staffSection = document.getElementById("staffSection");
-    const phoneForm = document.getElementById("phoneForm");
-    const otpForm = document.getElementById("otpForm");
-    const phoneInput = document.getElementById("phone");
-    const otpInput = document.getElementById("otp");
-    const loginStatus = document.getElementById("loginStatus");
-
-    let pendingPhone = "";
-    let sessionToken = "";
-
-    function normaliseUKMobile(value) {
-      let phone = value.trim().replace(/[\s().-]/g, "");
-
-      if (/^07\d{9}$/.test(phone)) {
-        phone = "+44" + phone.slice(1);
-      } else if (/^447\d{9}$/.test(phone)) {
-        phone = "+" + phone;
+    const amountButtons = [...document.querySelectorAll(".amount")];
+    const customAmount = document.getElementById("customAmount");
+    const amountSummary = document.getElementById("amountSummary");
+    const formStatus = document.getElementById("formStatus");
+    const donateButton = document.getElementById("donateButton");
+    let selectedAmount = 20;
+    function formatAmount(value){return new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(value);}
+    function updateAmount(value){
+      selectedAmount = value;
+      amountSummary.textContent = "Selected donation: " + formatAmount(value);
+      amountButtons.forEach(button=>button.setAttribute("aria-pressed",String(Number(button.dataset.amount)===value)));
+    }
+    amountButtons.forEach(button=>button.addEventListener("click",()=>{
+      customAmount.value="";
+      updateAmount(Number(button.dataset.amount));
+      formStatus.textContent="";
+      formStatus.className="status";
+    }));
+    customAmount.addEventListener("input",()=>{
+      const value=Number(customAmount.value);
+      amountButtons.forEach(button=>button.setAttribute("aria-pressed","false"));
+      if(Number.isFinite(value)&&value>0&&value<=5000){
+        selectedAmount=value;
+        amountSummary.textContent="Selected donation: "+formatAmount(value);
+      }else{
+        amountSummary.textContent="Enter an amount between £1 and £5,000.";
       }
-
-      return /^\+447\d{9}$/.test(phone) ? phone : null;
-    }
-
-    function setStatus(message, type = "") {
-      loginStatus.textContent = message;
-      loginStatus.className = "status " + type;
-    }
-
-    async function api(action, payload = {}, authenticated = false) {
-      const headers = {
-        "Content-Type": "application/json"
-      };
-
-      if (authenticated) {
-        if (!sessionToken) {
-          throw new Error("Your session has expired. Please sign in again.");
-        }
-
-        headers.Authorization = "Bearer " + sessionToken;
-      }
-
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ action, ...payload })
-      });
-
-      let data;
-
-      try {
-        data = await response.json();
-      } catch {
-        throw new Error("The server returned an unreadable response. Please try again.");
-      }
-
-      if (!response.ok || data.ok === false || data.error) {
-        throw new Error(
-          data.error || "The request could not be completed. Please try again."
-        );
-      }
-
-      return data;
-    }
-
-    function formatGBPFromPence(pence) {
-      const number = Number(pence);
-
-      if (!Number.isFinite(number)) {
-        return "Not available";
-      }
-
-      return new Intl.NumberFormat("en-GB", {
-        style: "currency",
-        currency: "GBP"
-      }).format(number / 100);
-    }
-
-    // Translate controlled transaction type labels only; never translate customer notes or account data.
-    function displayTransactionType(type) {
-      const labels = {
-        cash_payment: "Cash payment received",
-        debt_added: "Add debt",
-        debt_reduced: "Reduce debt (adjustment)"
-      };
-      const label = labels[type] || type || "Account transaction";
-      return window.churchTranslate ? window.churchTranslate(label) : label;
-    }
-
-    const logoutVerseSection = document.getElementById("logoutVerseSection");
-    function showLogoutVerse() {
-      loginSection.classList.add("hidden");
-      accountSection.classList.add("hidden");
-      nameSection.classList.add("hidden");
-      staffSection.classList.add("hidden");
-      const data = window.ChurchDailyVerse.get(document.documentElement.lang || "en");
-      document.getElementById("logoutVerseTitle").textContent = data.title;
-      document.getElementById("logoutVerseText").textContent = data.verse;
-      document.getElementById("logoutVerseRef").textContent = data.reference;
-      document.getElementById("logoutVerseStatus").textContent = data.signedOut;
-      document.getElementById("logoutVerseReturn").textContent = data.returnLabel;
-      logoutVerseSection.dir = data.direction;
-      logoutVerseSection.classList.remove("hidden");
-      logoutVerseSection.focus();
-    }
-    document.getElementById("logoutVerseReturn").addEventListener("click", () => {
-      logoutVerseSection.classList.add("hidden");
-      showLogin();
-      setStatus("");
     });
-    function showLogin() {
-      logoutVerseSection.classList.add("hidden");
-      accountSection.classList.add("hidden");
-      nameSection.classList.add("hidden");
-      staffSection.classList.add("hidden");
-      loginSection.classList.remove("hidden");
-      phoneForm.classList.remove("hidden");
-      otpForm.classList.add("hidden");
-    }
-
-    function showAccount() {
-      logoutVerseSection.classList.add("hidden");
-      loginSection.classList.add("hidden");
-      staffSection.classList.add("hidden");
-      nameSection.classList.add("hidden");
-      accountSection.classList.remove("hidden");
-    }
-
-    document.getElementById("customerNameForm").addEventListener("submit", async event => {
+    document.getElementById("donationForm").addEventListener("submit",event=>{
       event.preventDefault();
-      const input = document.getElementById("customerNameInput");
-      const button = document.getElementById("saveCustomerNameButton");
-      const status = document.getElementById("customerNameStatus");
-      const customerName = input.value.trim().replace(/\s+/g, " ");
-      if (!customerName || customerName.length > 100) {
-        status.textContent = "Please enter your name (up to 100 characters).";
-        status.className = "status error";
+      const amount=Number(customAmount.value||selectedAmount);
+      if(!Number.isFinite(amount)||amount<1||amount>5000){
+        formStatus.textContent="Please choose a donation amount between £1 and £5,000.";
+        formStatus.className="status error";
         return;
       }
-      button.disabled = true;
-      status.textContent = "Saving your name…";
-      status.className = "status";
-      try {
-        const saved = await api("set_name", { customer_name: customerName }, true);
-        if (!saved.customer?.customer_name) {
-          throw new Error("The server did not confirm that your name was saved. Please try again.");
-        }
-        input.value = saved.customer.customer_name;
-        status.textContent = "Your name has been saved. Loading your account…";
-        status.className = "status success";
-        try {
-          await refreshAccount();
-        } catch (loadError) {
-          status.textContent = "Your name was saved, but your account details could not load. Please try again.";
-          status.className = "status error";
-        }
-      } catch (error) {
-        status.textContent = error.message || "Could not save your name.";
-        status.className = "status error";
-      } finally {
-        button.disabled = false;
+      if(!document.getElementById("humanCheck").checked){
+        formStatus.textContent="Please complete the security check first.";
+        formStatus.className="status error";
+        return;
       }
+      formStatus.textContent="Demo complete: no payment has been taken and no details have been sent or saved.";
+      formStatus.className="status success";
+      donateButton.textContent="Demo only — no payment processed";
+      donateButton.disabled=true;
     });
-
-    phoneForm.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const phone = normaliseUKMobile(phoneInput.value);
-
-      if (!phone) {
-        setStatus(
-          "Enter a valid UK mobile number, such as 07123456789.",
-          "error"
-        );
-        return;
-      }
-
-      const button = document.getElementById("sendCodeButton");
-      button.disabled = true;
-      setStatus("Requesting verification code…");
-
-      try {
-        await api("request_otp", {
-          mobile_number: phone,
-          locale: document.documentElement.lang || "en"
-        });
-
-        pendingPhone = phone;
-        phoneForm.classList.add("hidden");
-        otpForm.classList.remove("hidden");
-        otpInput.value = "";
-
-        setStatus(
-          "If your number is registered, a code will be sent. Check your SMS messages.",
-          "success"
-        );
-
-        otpInput.focus();
-      } catch (error) {
-        setStatus(error.message || "Unable to request a code.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    otpForm.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const code = otpInput.value.trim();
-
-      if (!/^\d{6}$/.test(code) || !pendingPhone) {
-        setStatus("Enter the six-digit verification code.", "error");
-        return;
-      }
-
-      const button = document.getElementById("verifyButton");
-      button.disabled = true;
-      setStatus("Verifying code…");
-
-      try {
-        const result = await api("verify_otp", {
-          mobile_number: pendingPhone,
-          code
-        });
-
-        if (!result.token) {
-          throw new Error(
-            "The server did not start a session. Please request a new code."
-          );
-        }
-
-        sessionToken = result.token;
-        // Use the verified OTP response first so customers without a saved name
-        // are taken straight to the name form without an extra account request.
-        const verifiedName = typeof result.customer?.customer_name === "string"
-          ? result.customer.customer_name.trim()
-          : "";
-        if (!verifiedName) {
-          loginSection.classList.add("hidden");
-          accountSection.classList.add("hidden");
-          staffSection.classList.add("hidden");
-          logoutVerseSection.classList.add("hidden");
-          nameSection.classList.remove("hidden");
-          document.getElementById("customerNameInput").value = "";
-          document.getElementById("customerNameStatus").textContent = "";
-          document.getElementById("customerNameStatus").className = "status";
-          document.getElementById("customerNameInput").focus();
-        } else {
-          await refreshAccount();
-        }
-        setStatus("");
-      } catch (error) {
-        sessionToken = "";
-        setStatus(
-          error.message || "Sign-in failed. Please try again.",
-          "error"
-        );
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    async function refreshAccount() {
-      const accountResult = await api("account", {}, true);
-      const savedName = typeof accountResult.customer?.customer_name === "string"
-        ? accountResult.customer.customer_name.trim()
-        : "";
-      if (!savedName) {
-        loginSection.classList.add("hidden");
-        accountSection.classList.add("hidden");
-        staffSection.classList.add("hidden");
-        logoutVerseSection.classList.add("hidden");
-        nameSection.classList.remove("hidden");
-        document.getElementById("customerNameInput").focus();
-        return;
-      }
-      document.getElementById("customerNameHeading").textContent = accountResult.customer.customer_name;
-      const [balanceResult, historyResult] = await Promise.all([
-        api("balance", {}, true),
-        api("history", {}, true)
-      ]);
-
-      const balance = balanceResult.balance;
-
-      const pence =
-        balance && balance.balance_pence !== undefined
-          ? balance.balance_pence
-          : null;
-
-      document.getElementById("balance").textContent =
-        pence === null
-          ? "Not available"
-          : formatGBPFromPence(pence);
-
-      const history = document.getElementById("history");
-      history.replaceChildren();
-
-      const entries = Array.isArray(historyResult.transactions)
-        ? historyResult.transactions
-        : [];
-
-      if (!entries.length) {
-        const empty = document.createElement("p");
-        empty.className = "muted";
-        empty.textContent = "No payment history available.";
-        history.appendChild(empty);
-      } else {
-        for (const entry of entries) {
-          const item = document.createElement("div");
-          item.className = "history-item";
-
-          const details = document.createElement("div");
-
-          const title = document.createElement("strong");
-          title.textContent =
-            displayTransactionType(entry.transaction_type);
-
-          details.appendChild(title);
-
-          if (entry.note) {
-            const note = document.createElement("div");
-            note.className = "small muted";
-            note.textContent = entry.note;
-            details.appendChild(note);
-          }
-
-          const date = document.createElement("div");
-          date.className = "small muted";
-
-          const parsedDate = new Date(entry.created_at);
-
-          date.textContent = Number.isNaN(parsedDate.getTime())
-            ? ""
-            : parsedDate.toLocaleString("en-GB");
-
-          details.appendChild(date);
-
-          const amount = document.createElement("div");
-          amount.className = "history-amount";
-          amount.textContent = formatGBPFromPence(entry.amount_pence);
-
-          item.append(details, amount);
-          history.appendChild(item);
-        }
-      }
-
-      showAccount();
-    }
-
-    document
-      .getElementById("changeNumberButton")
-      .addEventListener("click", () => {
-        pendingPhone = "";
-        otpInput.value = "";
-
-        phoneForm.classList.remove("hidden");
-        otpForm.classList.add("hidden");
-
-        setStatus("");
-        phoneInput.focus();
-      });
-
-    document
-      .getElementById("logoutButton")
-      .addEventListener("click", async () => {
-        const button = document.getElementById("logoutButton");
-        button.disabled = true;
-        try {
-          if (sessionToken) await api("logout", {}, true);
-        } catch {
-          // Immediately end the browser session; the server token expires automatically.
-        } finally {
-          sessionToken = "";
-          pendingPhone = "";
-          phoneInput.value = "";
-          otpInput.value = "";
-          button.disabled = false;
-          showLogoutVerse();
-        }
-      });
-
-    // Staff sessions are held in memory only, never in browser storage.
-    const STAFF_API_URL = "https://acyjdlrsvtgqqazzxzys.supabase.co/functions/v1/staff-pin";
-    // Supabase publishable keys are designed to be public; never use a secret or service-role key here.
-    const STAFF_PUBLISHABLE_KEY = "sb_publishable_RtCgif0EJYw_LgjgLSEPzQ_xasQeIf4";
-    let staffToken = "";
-    let selectedStaffCustomer = null;
-    let signedInStaff = null;
-    let checkedStaffMobile = "";
-
-    function staffStatus(message, type = "") {
-      const el = document.getElementById("staffStatus");
-      el.textContent = message;
-      el.className = "status " + type;
-    }
-
-    async function staffApi(action, payload = {}, requireSession = true) {
-      const headers = { "Content-Type": "application/json", "apikey": STAFF_PUBLISHABLE_KEY };
-      if (requireSession) {
-        if (!staffToken) throw new Error("Staff session expired. Please sign in again.");
-        payload = { ...payload, sessionToken: staffToken };
-      }
-      let response;
-      try {
-        response = await fetch(STAFF_API_URL, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ action, ...payload })
-        });
-      } catch {
-        throw new Error("Cannot reach the staff server. Check your internet connection.");
-      }
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || data.error) {
-        if (response.status === 401 && requireSession &&
-            /session/i.test(data.error || "")) {
-          staffToken = "";
-          selectedStaffCustomer = null;
-          document.getElementById("staffWorkspace").classList.add("hidden");
-          document.getElementById("staffLoginForm").classList.remove("hidden");
-        }
-        throw new Error(data.error || ("Staff request failed (HTTP " + response.status + "). Please try again."));
-      }
-      return data;
-    }
-
-    function clearSelectedCustomer() {
-      selectedStaffCustomer = null;
-      document.getElementById("staffCustomer").classList.add("hidden");
-      document.getElementById("staffRegister").classList.add("hidden");
-      document.getElementById("staffCustomerName").value = "";
-      document.getElementById("staffCustomerNameStatus").textContent = "";
-      document.getElementById("staffCustomerNameStatus").className = "status";
-    }
-
-    async function loadStaffCustomer() {
-      if (!selectedStaffCustomer) return;
-      const customerId = selectedStaffCustomer.id;
-      const [balanceResult, historyResult] = await Promise.all([
-        staffApi("customer_balance", { customerId }),
-        staffApi("customer_history", { customerId })
-      ]);
-      // Ignore a delayed response if staff have since selected another customer.
-      if (!selectedStaffCustomer || selectedStaffCustomer.id !== customerId) return;
-      document.getElementById("staffBalance").textContent =
-        formatGBPFromPence(balanceResult.balance?.balance_pence ?? 0);
-      const container = document.getElementById("staffHistory");
-      container.replaceChildren();
-      const records = Array.isArray(historyResult.history) ? historyResult.history : [];
-      if (!records.length) {
-        const empty = document.createElement("p");
-        empty.className = "muted";
-        empty.textContent = "No transactions recorded yet.";
-        container.appendChild(empty);
-      }
-      for (const entry of records) {
-        const item = document.createElement("div");
-        item.className = "history-item";
-        const details = document.createElement("div");
-        const heading = document.createElement("strong");
-        heading.textContent = displayTransactionType(entry.transaction_type);
-        details.appendChild(heading);
-        if (entry.note) {
-          const note = document.createElement("div");
-          note.className = "muted small";
-          note.textContent = entry.note;
-          details.appendChild(note);
-        }
-        if (entry.created_at) {
-          const date = document.createElement("div");
-          date.className = "muted small";
-          const dt = new Date(entry.created_at);
-          date.textContent = Number.isNaN(dt.getTime()) ? "" : dt.toLocaleString("en-GB");
-          details.appendChild(date);
-        }
-        const amount = document.createElement("div");
-        amount.className = "history-amount";
-        amount.textContent = formatGBPFromPence(entry.amount_pence);
-        item.append(details, amount);
-        container.appendChild(item);
-      }
-    }
-
-    function selectStaffCustomer(customer) {
-      clearSelectedCustomer();
-      selectedStaffCustomer = customer;
-      document.getElementById("staffCustomerLabel").textContent =
-        (customer.customer_name ? customer.customer_name + " — " : "Name not added yet — ") + customer.mobile_number;
-      document.getElementById("staffCustomerName").value = customer.customer_name || "";
-      document.getElementById("staffCustomer").classList.remove("hidden");
-    }
-
-    document.getElementById("staffLink").addEventListener("click", event => {
-      event.preventDefault();
-      loginSection.classList.add("hidden");
-      accountSection.classList.add("hidden");
-      nameSection.classList.add("hidden");
-      staffSection.classList.remove("hidden");
-      staffStatus("");
-      if (!staffToken) document.getElementById("staffPin").focus();
-    });
-
-    document.getElementById("staffLoginForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      const pin = document.getElementById("staffPin").value.trim();
-      if (!/^[0-9]{4}$/.test(pin)) {
-        staffStatus("Enter your four-digit staff PIN.", "error");
-        return;
-      }
-      const button = document.getElementById("staffLoginButton");
-      button.disabled = true;
-      staffStatus("Signing in…");
-      try {
-        const username = document.getElementById("staffUsername").value.trim().toLowerCase();
-        const data = await staffApi("login", { username, pin }, false);
-        if (!data.sessionToken) throw new Error("Staff server did not create a session.");
-        staffToken = data.sessionToken;
-        signedInStaff = data.staff;
-        document.getElementById("signedInStaffLabel").textContent =
-          "Signed in: " + (signedInStaff?.display_name || username) +
-          " (" + (signedInStaff?.role === "admin" ? "Head Admin" : "Staff") + ")";
-        document.getElementById("staffAdminPanel").classList.toggle("hidden", signedInStaff?.role !== "admin");
-        if (signedInStaff?.role === "admin") await loadStaffAccounts();
-        document.getElementById("staffPin").value = "";
-        document.getElementById("staffLoginForm").classList.add("hidden");
-        document.getElementById("staffWorkspace").classList.remove("hidden");
-        staffStatus("Staff signed in.", "success");
-      } catch (error) {
-        staffStatus(error.message || "Unable to sign in.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    document.getElementById("staffFindForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      const mobile = normaliseUKMobile(document.getElementById("staffMobile").value);
-      clearSelectedCustomer();
-      document.getElementById("staffRegisterName").value = "";
-      if (!mobile) {
-        staffStatus("Enter a valid UK mobile number.", "error");
-        return;
-      }
-      checkedStaffMobile = "";
-      staffStatus("Searching customer…");
-      try {
-        const data = await staffApi("find_customer", { mobile });
-        checkedStaffMobile = mobile;
-        if (data.found && data.customer) {
-          selectStaffCustomer(data.customer);
-          await loadStaffCustomer();
-          staffStatus("Customer found.", "success");
-        } else {
-          document.getElementById("staffRegister").classList.remove("hidden");
-          staffStatus("No registered customer found.");
-        }
-      } catch (error) {
-        staffStatus(error.message || "Customer search failed.", "error");
-      }
-    });
-
-    document.getElementById("staffRegisterButton").addEventListener("click", async () => {
-      if (!checkedStaffMobile) return;
-      const mobile = normaliseUKMobile(document.getElementById("staffMobile").value);
-      if (mobile !== checkedStaffMobile) {
-        staffStatus("Search this phone number before registering.", "error");
-        return;
-      }
-      const customerName = document.getElementById("staffRegisterName").value.trim().replace(/\s+/g, " ");
-      if (!customerName || customerName.length > 100) {
-        staffStatus("Enter the customer's full name (up to 100 characters).", "error");
-        return;
-      }
-      if (!confirm("Register " + customerName + " (" + mobile + ") as a new customer account?")) return;
-      const button = document.getElementById("staffRegisterButton");
-      button.disabled = true;
-      try {
-        const data = await staffApi("register_customer", { mobile, customer_name: customerName });
-        if (!data.customer) throw new Error("Customer was not returned by the server.");
-        document.getElementById("staffRegisterName").value = "";
-        selectStaffCustomer(data.customer);
-        await loadStaffCustomer();
-        staffStatus("Customer account registered with a name.", "success");
-      } catch (error) {
-        staffStatus(error.message || "Customer registration failed.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    document.getElementById("staffSaveCustomerNameButton").addEventListener("click", async () => {
-      if (!selectedStaffCustomer) return;
-      const customerName = document.getElementById("staffCustomerName").value.trim().replace(/\s+/g, " ");
-      const status = document.getElementById("staffCustomerNameStatus");
-      if (!customerName || customerName.length > 100) {
-        status.textContent = "Enter a name between 1 and 100 characters.";
-        status.className = "status error";
-        return;
-      }
-      if (!confirm("Save account name as " + customerName + " for " + selectedStaffCustomer.mobile_number + "?")) return;
-      const button = document.getElementById("staffSaveCustomerNameButton");
-      button.disabled = true;
-      status.textContent = "Saving account name…";
-      status.className = "status";
-      try {
-        const data = await staffApi("update_customer_name", {
-          customerId: selectedStaffCustomer.id,
-          customer_name: customerName
-        });
-        if (!data.customer) throw new Error("The updated customer account was not returned.");
-        selectStaffCustomer(data.customer);
-        status.textContent = "Account name saved.";
-        status.className = "status success";
-        staffStatus("Customer account name updated.", "success");
-      } catch (error) {
-        status.textContent = error.message || "Could not update the account name.";
-        status.className = "status error";
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    document.getElementById("staffTransactionForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      if (!selectedStaffCustomer) return;
-      const amountText = document.getElementById("staffAmount").value.trim();
-      if (!/^(?:[0-9]+)(?:\.[0-9]{1,2})?$/.test(amountText)) {
-        staffStatus("Enter a valid amount with at most two decimal places.", "error");
-        return;
-      }
-      const amountPence = Math.round(Number(amountText) * 100);
-      if (!Number.isSafeInteger(amountPence) || amountPence < 1 || amountPence > 49900) {
-        staffStatus("Amount must be between £0.01 and £499.", "error");
-        return;
-      }
-      const type = document.getElementById("staffTransactionType").value;
-      const note = document.getElementById("staffNote").value.trim();
-      const mobile = selectedStaffCustomer.mobile_number;
-      const accountName = selectedStaffCustomer.customer_name || "unnamed account";
-      if (!confirm("Record " + type.replace(/_/g, " ") + " of " +
-                   formatGBPFromPence(amountPence) + " for " + accountName + " (" + mobile + ")?")) return;
-      const button = document.getElementById("staffRecordButton");
-      button.disabled = true;
-      staffStatus("Recording transaction…");
-      try {
-        await staffApi("record_transaction", {
-          customerId: selectedStaffCustomer.id, type, amountPence, note
-        });
-        document.getElementById("staffAmount").value = "";
-        document.getElementById("staffNote").value = "";
-        staffStatus("Transaction recorded successfully.", "success");
-        await loadStaffCustomer();
-      } catch (error) {
-        staffStatus(error.message || "Transaction failed. Check the account before retrying.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    async function loadStaffAccounts() {
-      const list = document.getElementById("staffAccountList");
-      list.replaceChildren();
-      try {
-        const data = await staffApi("list_staff");
-        const accounts = Array.isArray(data.staff) ? data.staff : [];
-        for (const person of accounts) {
-          const item = document.createElement("div");
-          item.className = "history-item";
-          const info = document.createElement("div");
-          const title = document.createElement("strong");
-          title.textContent = person.display_name + " (@" + person.username + ")";
-          const status = document.createElement("div");
-          status.className = "muted small";
-          status.textContent = person.role === "admin" ? "Head Admin" : (person.is_active ? "Active staff" : "Disabled staff");
-          info.append(title, status);
-          item.appendChild(info);
-          if (person.role !== "admin") {
-            const buttons = document.createElement("div");
-            const toggle = document.createElement("button");
-            toggle.type = "button";
-            toggle.className = "button button-secondary";
-            toggle.textContent = person.is_active ? "Disable" : "Enable";
-            toggle.addEventListener("click", async () => {
-              if (!confirm((person.is_active ? "Disable " : "Enable ") + person.display_name + "?")) return;
-              toggle.disabled = true;
-              try {
-                await staffApi("set_staff_active", { staffId: person.id, isActive: !person.is_active });
-                staffStatus("Staff account updated.", "success");
-                await loadStaffAccounts();
-              } catch (err) {
-                staffStatus(err.message || "Could not update staff.", "error");
-                toggle.disabled = false;
-              }
-            });
-            const reset = document.createElement("button");
-            reset.type = "button";
-            reset.className = "button button-secondary";
-            reset.textContent = "Reset PIN";
-            reset.addEventListener("click", async () => {
-              const pin = prompt("Enter a new four-digit PIN for " + person.display_name + ". Do not share the PIN.");
-              if (pin === null) return;
-              if (!/^[0-9]{4}$/.test(pin)) {
-                staffStatus("PIN must contain exactly four digits.", "error");
-                return;
-              }
-              if (!confirm("Reset PIN for " + person.display_name + "? Their existing sessions will end.")) return;
-              reset.disabled = true;
-              try {
-                await staffApi("reset_staff_pin", { staffId: person.id, pin });
-                staffStatus("Staff PIN updated.", "success");
-              } catch (err) {
-                staffStatus(err.message || "Unable to reset PIN.", "error");
-              } finally {
-                reset.disabled = false;
-              }
-            });
-            buttons.append(toggle, reset);
-            item.appendChild(buttons);
-          }
-          list.appendChild(item);
-        }
-      } catch (error) {
-        staffStatus(error.message || "Unable to load staff accounts.", "error");
-      }
-    }
-
-    document.getElementById("staffCreateForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      const displayName = document.getElementById("staffNewName").value.trim();
-      const username = document.getElementById("staffNewUsername").value.trim().toLowerCase();
-      const pin = document.getElementById("staffNewPin").value.trim();
-      if (!/^[a-z][a-z0-9._-]{2,31}$/.test(username) || !/^[0-9]{4}$/.test(pin)) {
-        staffStatus("Check the username and four-digit PIN.", "error");
-        return;
-      }
-      if (!confirm("Create an account for " + displayName + " (@" + username + ")?")) return;
-      const button = document.getElementById("staffCreateButton");
-      button.disabled = true;
-      try {
-        await staffApi("create_staff", { username, displayName, pin });
-        document.getElementById("staffNewName").value = "";
-        document.getElementById("staffNewUsername").value = "";
-        document.getElementById("staffNewPin").value = "";
-        staffStatus("Staff account registered.", "success");
-        await loadStaffAccounts();
-      } catch (error) {
-        staffStatus(error.message || "Unable to register staff.", "error");
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    async function staffLogout() {
-      const token = staffToken;
-      staffToken = "";
-      signedInStaff = null;
-      document.getElementById("staffAdminPanel").classList.add("hidden");
-      clearSelectedCustomer();
-      checkedStaffMobile = "";
-      document.getElementById("staffWorkspace").classList.add("hidden");
-      document.getElementById("staffLoginForm").classList.remove("hidden");
-      document.getElementById("staffPin").value = "";
-      try {
-        if (token) await fetch(STAFF_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "apikey": STAFF_PUBLISHABLE_KEY },
-          body: JSON.stringify({ action: "logout", sessionToken: token })
-        });
-      } catch {
-        // Browser session was cleared; the remote staff session expires automatically.
-      }
-      showLogoutVerse();
-    }
-    document.getElementById("staffLogoutButton").addEventListener("click", staffLogout);
-    document.getElementById("staffBackButton").addEventListener("click", staffLogout);
   </script>
 </body>
 </html>
