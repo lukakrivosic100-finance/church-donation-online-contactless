@@ -30,13 +30,28 @@
     .methods{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.method{border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;color:#4d5b51;background:#fff}
     .footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 32px}.footer a{color:var(--green)}
     @media(max-width:520px){.amounts{grid-template-columns:repeat(2,1fr)}main{margin-top:18px}.top{padding:20px 14px}.mark{width:46px;height:46px}}
+      [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <header class="top"><div class="head"><div class="mark" aria-hidden="true">✝</div><div><h1>Church Donations</h1><p>Online giving · Demonstration page</p></div></div></header>
   <main>
     <div class="demo"><strong>DEMO ONLY — NO MONEY WILL BE TAKEN.</strong> SMS verification is connected to TextBee for testing. If you request a code, your mobile number will be sent securely to the SMS gateway. Donations and card payments remain a demonstration only; no money is taken.</div>
-    <section class="panel">
+    <section class="panel" id="phoneVerificationPanel">
+      <h2>Verify your mobile number</h2>
+      <p class="muted">Enter your mobile number and we’ll send you a six-digit verification code by SMS.</p>
+      <label for="mobileNumber">Mobile number (include country code)</label>
+      <input id="mobileNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="+447..." aria-describedby="phoneHint">
+      <p class="muted small" id="phoneHint">For the UK, use +44 followed by your number without the first zero.</p>
+      <button class="pay" id="sendCodeButton" type="button">Send verification code</button>
+      <div id="codeArea" hidden>
+        <label for="verificationCode">Six-digit verification code</label>
+        <input id="verificationCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+        <button class="pay" id="verifyCodeButton" type="button">Verify number</button>
+      </div>
+      <p id="smsStatus" class="status" role="status" aria-live="polite"></p>
+    </section>
+    <section class="panel" id="donationPanel" hidden>
       <h2>Support our church</h2>
       <p class="muted">Thank you for considering a donation. Your generosity helps support the life and work of our church community.</p>
       <form id="donationForm">
