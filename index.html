@@ -35,7 +35,7 @@
 <body>
   <header class="top"><div class="head"><div class="mark" aria-hidden="true">✝</div><div><h1>Church Donations</h1><p>Online giving · Demonstration page</p></div></div></header>
   <main>
-    <div class="demo"><strong>DEMO ONLY — NO MONEY WILL BE TAKEN.</strong> This is a visual prototype. It does not connect to a payment provider, save your details, send messages or process donations. Please do not enter real payment or personal information.</div>
+    <div class="demo"><strong>DEMO ONLY — NO MONEY WILL BE TAKEN.</strong> SMS verification is connected to TextBee for testing. If you request a code, your mobile number will be sent securely to the SMS gateway. Donations and card payments remain a demonstration only; no money is taken.</div>
     <section class="panel">
       <h2>Support our church</h2>
       <p class="muted">Thank you for considering a donation. Your generosity helps support the life and work of our church community.</p>
@@ -80,7 +80,7 @@
           <h3>Security check</h3>
           <p class="muted small">For security reasons, please verify that you are not a robot before continuing.</p>
           <label class="tick"><input id="humanCheck" type="checkbox"><span>I'm not a robot <span class="muted small">(simulated demo check)</span></span></label>
-          <p class="muted small">This prototype does not send an SMS or email verification code. A real website should use a reputable anti-bot service; never ask donors to share one-time banking or login codes.</p>
+          <p class="muted small">This checkbox is only a demonstration and is not a real anti-bot challenge. Never ask donors to share one-time banking or login codes.</p>
         </div>
         <button class="pay" id="donateButton" type="submit">Continue to secure card payment (demo)</button>
         <p id="formStatus" class="status" role="status" aria-live="polite"></p>
@@ -88,13 +88,89 @@
     </section>
     <section class="panel">
       <h3>Important information</h3>
-      <p class="muted small">This is a non-functional demonstration, not a live donation service. No payment is taken and no information is transmitted or stored. Before going live, the organisation must confirm its legal charity name and Gift Aid eligibility, privacy notice, payment provider and donation terms.</p>
+      <p class="muted small">This is not a live donation service. SMS verification sends your mobile number and a one-time code request to TextBee; verification records are stored temporarily in Supabase. No card details are collected, no payment is taken and donation details are not saved. Before going live, the organisation must confirm its legal charity name and Gift Aid eligibility, privacy notice, payment provider and donation terms.</p>
     </section>
   </main>
   <footer class="footer">Church Donations · Demonstration only</footer>
   <script>
     "use strict";
-    const amountButtons = [...document.querySelectorAll(".amount")];
+    const SUPABASE_URL = "https://acyjdlrsvtgqqazzxzys.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjeWpkbHJzdnRncXFhenp4enlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwOTg1MjgsImV4cCI6MjEwODY3NDUyOH0.MfVrcDN_jncXRp9KAquZc9o5a6EHPq73DTqajMMu8gU";
+    const smsStatus = document.getElementById("smsStatus");
+    const sendCodeButton = document.getElementById("sendCodeButton");
+    const verifyCodeButton = document.getElementById("verifyCodeButton");
+    const mobileInput = document.getElementById("mobileNumber");
+    const codeArea = document.getElementById("codeArea");
+    const donationPanel = document.getElementById("donationPanel");
+    let verifiedMobile = "";
+    async function smsRequest(payload) {
+      const response = await fetch(SUPABASE_URL + "/functions/v1/donation-sms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Could not contact the SMS service.");
+      return data;
+    }
+    sendCodeButton.addEventListener("click", async () => {
+      const mobile = mobileInput.value.trim();
+      if (!/^\\+[1-9]\\d{7,14}$/.test(mobile.replace(/[\\s().-]/g, ""))) {
+        smsStatus.textContent = "Enter a valid number with country code, for example +447700900123.";
+        smsStatus.className = "status error";
+        return;
+      }
+      sendCodeButton.disabled = true;
+      smsStatus.textContent = "Requesting your SMS code…";
+      smsStatus.className = "status";
+      try {
+        const normalized = mobile.replace(/[\\s().-]/g, "");
+        const result = await smsRequest({ action: "request_otp", mobile_number: normalized });
+        verifiedMobile = normalized;
+        codeArea.hidden = false;
+        smsStatus.textContent = result.message || "Code sent. Check your phone.";
+        smsStatus.className = "status success";
+        document.getElementById("verificationCode").focus();
+      } catch (error) {
+        smsStatus.textContent = error.message || "SMS could not be sent. Please try again.";
+        smsStatus.className = "status error";
+      } finally {
+        sendCodeButton.disabled = false;
+      }
+    });
+    verifyCodeButton.addEventListener("click", async () => {
+      const code = document.getElementById("verificationCode").value.trim();
+      if (!/^\\d{6}$/.test(code)) {
+        smsStatus.textContent = "Enter the six-digit code from your SMS.";
+        smsStatus.className = "status error";
+        return;
+      }
+      verifyCodeButton.disabled = true;
+      smsStatus.textContent = "Checking your code…";
+      smsStatus.className = "status";
+      try {
+        const result = await smsRequest({ action: "verify_otp", mobile_number: verifiedMobile, code });
+        if (!result.verified) throw new Error("We could not verify that number.");
+        smsStatus.textContent = "Mobile number verified. You can continue below.";
+        smsStatus.className = "status success";
+        donationPanel.hidden = false;
+        donationPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("donorName").focus();
+        document.getElementById("mobileNumber").readOnly = true;
+        sendCodeButton.hidden = true;
+        codeArea.hidden = true;
+      } catch (error) {
+        smsStatus.textContent = error.message || "That code could not be verified.";
+        smsStatus.className = "status error";
+      } finally {
+        verifyCodeButton.disabled = false;
+      }
+    });
+\n    const amountButtons = [...document.querySelectorAll(".amount")];
     const customAmount = document.getElementById("customAmount");
     const amountSummary = document.getElementById("amountSummary");
     const formStatus = document.getElementById("formStatus");
