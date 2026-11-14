@@ -128,7 +128,7 @@
       smsStatus.textContent = "Requesting your SMS code…";
       smsStatus.className = "status";
       try {
-        const normalized = mobile.replace(/[\\s().-]/g, "");
+        const normalized = mobile.replace(/[\s().-]/g, "");
         const result = await smsRequest({ action: "request_otp", mobile_number: normalized });
         verifiedMobile = normalized;
         codeArea.hidden = false;
