@@ -119,7 +119,7 @@
     }
     sendCodeButton.addEventListener("click", async () => {
       const mobile = mobileInput.value.trim();
-      if (!/^\\+[1-9]\\d{7,14}$/.test(mobile.replace(/[\\s().-]/g, ""))) {
+      if (!/^\+[1-9]\d{7,14}$/.test(mobile.replace(/[\s().-]/g, ""))) {
         smsStatus.textContent = "Enter a valid number with country code, for example +447700900123.";
         smsStatus.className = "status error";
         return;
@@ -144,7 +144,7 @@
     });
     verifyCodeButton.addEventListener("click", async () => {
       const code = document.getElementById("verificationCode").value.trim();
-      if (!/^\\d{6}$/.test(code)) {
+      if (!/^\d{6}$/.test(code)) {
         smsStatus.textContent = "Enter the six-digit code from your SMS.";
         smsStatus.className = "status error";
         return;
